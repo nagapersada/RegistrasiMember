@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aktivasi Sinyal - DVTEAM NP</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Tambahan Style Khusus untuk Elegansi & Presisi Form */
+    .reg-card {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 30px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      font-size: 0.85em;
+      color: var(--warna-teks-sekunder);
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .form-group input {
+      width: 100% !important; /* Memastikan full width */
+      border: 1px solid var(--warna-border) !important;
+      background-color: rgba(0,0,0,0.2) !important;
+      transition: all 0.3s ease;
+    }
+    .form-group input:focus {
+      border-color: var(--warna-utama) !important;
+      background-color: var(--warna-bg-utama) !important;
+    }
+    .header-section {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header-section h2 {
+      color: var(--warna-utama);
+      margin: 10px 0 5px 0;
+      font-size: 1.8em;
+    }
+    .header-section p {
+      color: var(--warna-teks-sekunder);
+      font-size: 0.9em;
+    }
+    #btnSubmitReg {
+      width: 100%;
+      padding: 15px;
+      font-size: 1em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="login-page">
+  <div class="card reg-card">
+    <div class="header-section">
+      <img src="logo.png" alt="Logo DVTEAM" class="logo" style="width: 80px; height: auto;" />
+      <h2>Form Aktivasi Sinyal</h2>
+      <p>Lengkapi data untuk proses verifikasi akun</p>
+    </div>
+    
+    <div id="registration-form">
+      <div class="form-group">
+        <label>UID Saya (Wajib)</label>
+        <input type="text" id="reg-uid" placeholder="Masukkan 8 digit UID Anda" maxlength="15" />
+      </div>
+
+      <div class="form-group">
+        <label>UID Referal</label>
+        <input type="text" id="reg-upline" placeholder="Kosongkan jika tidak ada" />
+      </div>
+
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="reg-nama" placeholder="Masukkan Nama Sesuai ID" />
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-group">
+          <label>Usia</label>
+          <input type="number" id="reg-usia" placeholder="Contoh: 25" />
+        </div>
+        <div class="form-group">
+          <label>Tgl Bergabung</label>
+          <input type="date" id="reg-tgl" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tempat Tinggal</label>
+        <input type="text" id="reg-alamat" placeholder="Kota / Kabupaten" />
+      </div>
+
+      <div class="form-group">
+        <label>Pekerjaan</label>
+        <input type="text" id="reg-kerja" placeholder="Pekerjaan Saat Ini" />
+      </div>
+
+      <button id="btnSubmitReg">Kirim & Aktivasi via Telegram</button>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+  <script src="registration.js"></script>
+</body>
+</html>
