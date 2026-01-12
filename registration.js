@@ -1,11 +1,10 @@
-/* Gunakan Koneksi Supabase yang sama dengan script.js Anda */
 const supabaseUrl = 'https://hysjbwysizpczgcsqvuv.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5c2pid3lzaXpwY3pnY3NxdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjA2MTYsImV4cCI6MjA3OTQ5NjYxNn0.sLSfXMn9htsinETKUJ5IAsZ2l774rfeaNNmB7mVQcR4';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     const btn = document.getElementById('btnSubmitReg');
-    const fields = {
+    const data = {
         uid: document.getElementById('reg-uid').value.trim(),
         upline: document.getElementById('reg-upline').value.trim(),
         nama: document.getElementById('reg-nama').value.trim(),
@@ -15,73 +14,59 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
         tgl: document.getElementById('reg-tgl').value
     };
 
-    // Validasi Dasar
-    if (!fields.uid || !fields.nama) {
-        showNotification("Mohon isi UID dan Nama Lengkap!");
+    if (!data.uid || !data.nama) {
+        alert("UID dan Nama Lengkap wajib diisi!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "Sedang Memverifikasi...";
+    btn.textContent = "MEMPROSES...";
 
     try {
-        // 1. Cek Duplikasi UID
-        const { data: existing, error: checkError } = await db
-            .from('members')
-            .select('uid')
-            .eq('uid', fields.uid)
-            .maybeSingle();
-
-        if (checkError) throw checkError;
+        // Cek apakah UID sudah terdaftar (Validasi Duplikat)
+        const { data: existing } = await db.from('members').select('uid').eq('uid', data.uid).maybeSingle();
+        
         if (existing) {
-            alert("⚠️ UID " + fields.uid + " sudah terdaftar di sistem kami.");
+            alert("UID ini sudah terdaftar di sistem!");
             btn.disabled = false;
-            btn.textContent = "Kirim & Aktivasi via Telegram";
+            btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
             return;
         }
 
-        // 2. Simpan ke Supabase
-        btn.textContent = "Mengamankan Data...";
-        const { error: insertError } = await db.from('members').insert([{
-            nama: fields.nama,
-            uid: fields.uid,
-            upline: fields.upline || null,
-            tanggalbergabung: fields.tgl ? new Date(fields.tgl).toISOString() : new Date().toISOString()
+        // Simpan ke Supabase
+        const { error } = await db.from('members').insert([{
+            nama: data.nama,
+            uid: data.uid,
+            upline: data.upline || null,
+            tanggalbergabung: data.tgl ? new Date(data.tgl).toISOString() : new Date().toISOString()
         }]);
 
-        if (insertError) throw insertError;
+        if (error) throw error;
 
-        // 3. Arahkan ke Telegram
+        // Siapkan pesan Telegram
         const jam = new Date().getHours();
-        const salam = jam < 11 ? "Pagi" : jam < 15 ? "Siang" : jam < 18 ? "Sore" : "Malam";
+        const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
         
-        const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${fields.nama}.
+        const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
 
-UID saya: ${fields.uid}
-UID Referal: ${fields.upline || '-'}
-Nama Lengkap: ${fields.nama}
-Usia: ${fields.usia || '-'}
-Tempat Tinggal: ${fields.alamat || '-'}
-Pekerjaan: ${fields.kerja || '-'}
+UID saya: ${data.uid}
+UID Referal: ${data.upline || '-'}
+Nama Lengkap: ${data.nama}
+Usia: ${data.usia || '-'}
+Tempat Tinggal : ${data.alamat || '-'}
+Pekerjaan: ${data.kerja || '-'}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
 
+        // Redirect ke Telegram @DvTeam102
         window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 
     } catch (err) {
-        console.error(err);
-        showNotification("Terjadi kendala teknis. Coba lagi.");
+        alert("Terjadi kesalahan teknis: " + err.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = "Kirim & Aktivasi via Telegram";
+        btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
     }
 });
-
-function showNotification(msg) {
-    const note = document.getElementById('notification');
-    note.textContent = msg;
-    note.classList.add('show');
-    setTimeout(() => note.classList.remove('show'), 3000);
-}
