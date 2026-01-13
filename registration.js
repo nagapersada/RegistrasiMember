@@ -2,10 +2,12 @@ const supabaseUrl = 'https://hysjbwysizpczgcsqvuv.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5c2pid3lzaXpwY3pnY3NxdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjA2MTYsImV4cCI6MjA3OTQ5NjYxNn0.sLSfXMn9htsinETKUJ5IAsZ2l774rfeaNNmB7mVQcR4';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-const IMGBB_API_KEY = '32906b297b5d259e883492576b25121b'; 
+// API KEY BARU (Pastikan ini aktif)
+const IMGBB_API_KEY = '5a68759600115086058e17409247657f'; 
+
 let tempUser = {};
 
-// Preview Gambar
+// Fungsi Preview Gambar
 document.getElementById('fileInput').addEventListener('change', function() {
     const file = this.files[0];
     if (file) {
@@ -39,10 +41,10 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 
     btn.disabled = true;
-    btn.textContent = "MEMPROSES...";
+    btn.textContent = "SEDANG MEMPROSES...";
 
     try {
-        // 1. Cek UID (Wajib Kapital)
+        // 1. CEK UID (PENTING: Gunakan 'UID' Kapital agar sinkron dengan database)
         const { data: existing } = await db.from('members').select('UID').eq('UID', tempUser.uid).maybeSingle();
         if (existing) {
             alert("UID " + tempUser.uid + " sudah terdaftar!");
@@ -51,14 +53,25 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
             return;
         }
 
-        // 2. Upload Gambar
+        // 2. UPLOAD KE IMGBB
         let formData = new FormData();
         formData.append("image", fileFile);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+        
         const resData = await res.json();
+        
+        // Cek apakah upload berhasil
+        if (!resData.success) {
+            throw new Error("Gagal upload gambar: " + resData.error.message);
+        }
+        
         tempUser.buktiUrl = resData.data.url;
 
-        // 3. Simpan ke Supabase (Wajib Kapital sesuai database Anda)
+        // 3. SIMPAN KE SUPABASE (WAJIB KAPITAL: Nama, UID, Upline)
         const { error } = await db.from('members').insert([{
             Nama: tempUser.nama,
             UID: tempUser.uid,
@@ -68,6 +81,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
 
         if (error) throw error;
 
+        // Berhasil: Sembunyikan form dan tampilkan tombol Telegram
         document.getElementById('formSection').style.display = 'none';
         document.getElementById('actionSection').style.display = 'block';
 
@@ -79,10 +93,11 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 });
 
-// Telegram Aktivasi
+// Link Telegram Aktivasi Sinyal
 document.getElementById('btnAktivasiSinyal').addEventListener('click', () => {
     const jam = new Date().getHours();
     const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
+    
     const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${tempUser.nama}
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
@@ -97,11 +112,13 @@ Pekerjaan: ${tempUser.kerja || '-'}
 Screenshot Saldo: ${tempUser.buktiUrl}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
+
     window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 });
 
-// Telegram Group
+// Link Telegram Gabung Group
 document.getElementById('btnGabungGroup').addEventListener('click', () => {
-    const pesan = `Halo @DvTeamNP. Saya anggota baru (UID: ${tempUser.uid}). Nama: ${tempUser.nama}. Izin bergabung ke Group Edukasi.`;
+    const pesan = `Halo @DvTeamNP. Saya anggota baru (UID: ${tempUser.uid}).
+Nama: ${tempUser.nama}. Izin bergabung ke Group Edukasi.`;
     window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesan)}`;
 });
