@@ -27,8 +27,8 @@
     <div id="formSection">
       <div class="header-reg">
         <img src="logo.png" alt="Logo DVTEAM">
-        <h2>Registrasi Anggota & Aktivasi Sinyal</h2>
-        <p style="color: #888; font-size: 0.9em; margin-bottom: 30px;">Lengkapi data untuk akses Sinyal & Grup VIP</p>
+        <h2>Registraai & Aktivasi Sinyal</h2>
+        <p style="color: #888; font-size: 0.9em; margin-bottom: 30px;">Lengkapi data untuk akses VIP Sinyal</p>
       </div>
       <div class="form-group"><label>UID Anggota (Wajib)</label><input type="text" id="reg-uid" placeholder="8 digit UID"></div>
       <div class="form-group"><label>UID Referal</label><input type="text" id="reg-upline" placeholder="Kosongkan jika tidak ada"></div>
@@ -41,13 +41,27 @@
       <div class="form-group"><label>Pekerjaan</label><input type="text" id="reg-kerja" placeholder="Pekerjaan saat ini"></div>
       <button id="btnSubmitReg" class="btn-vip btn-gold">Simpan & Verifikasi Data</button>
     </div>
+
     <div id="actionSection">
-      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px dashed #ffd700;">
+      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px dashed #ffd700;">
         <h3 style="margin: 0; font-size: 1.2em;">✅ DATA BERHASIL DISIMPAN</h3>
-        <p style="font-size: 0.85em; margin: 10px 0 0 0;">Langkah terakhir: Kirim data dan <b>lampirkan screenshot saldo</b> di Telegram.</p>
+        <p style="font-size: 0.85em; margin: 10px 0 0 0;">Langkah terakhir: Bergabung ke grup dan ajukan aktivasi.</p>
       </div>
-      <button id="btnTeleAktivasi" class="btn-vip btn-gold">1. Aktivasi Sinyal (@DvTeam102)</button>
-      <button id="btnTeleGroup" class="btn-vip btn-outline">2. Gabung Grup VIP (@DvTeamNP)</button>
+      
+      <p style="color: #ffd700; font-weight: bold; font-size: 0.85em; margin-bottom: 15px; text-transform: uppercase;">1. Wajib Bergabung ke 2 Grup:</p>
+      <button onclick="window.open('https://t.me/+N3rUCTqJqcs5ZWU9', '_blank')" class="btn-vip btn-outline" style="margin-bottom: 10px;">👥 GABUNG GRUP 1</button>
+      <button onclick="window.open('https://t.me/+sI0wm3j9n2U2YWJl', '_blank')" class="btn-vip btn-outline" style="margin-bottom: 20px;">👥 GABUNG GRUP 2</button>
+
+      <div style="background: #111; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
+        <label style="display: flex; align-items: center; cursor: pointer; color: #ccc; font-size: 0.85em;">
+          <input type="checkbox" id="checkGroup" style="width: 20px; height: 20px; margin-right: 12px; accent-color: #ffd700;">
+          Saya sudah bergabung ke kedua grup di atas.
+        </label>
+      </div>
+
+      <button id="btnTeleAktivasi" class="btn-vip btn-gold" disabled style="opacity: 0.5; cursor: not-allowed;">
+        🚀 2. AJUKAN AKTIVASI SINYAL (@DVTEAM102)
+      </button>
     </div>
   </div>
   <script src="registration.js"></script>
