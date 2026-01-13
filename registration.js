@@ -1,3 +1,4 @@
+// Konfigurasi Supabase
 const supabaseUrl = 'https://hysjbwysizpczgcsqvuv.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5c2pid3lzaXpwY3pnY3NxdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjA2MTYsImV4cCI6MjA3OTQ5NjYxNn0.sLSfXMn9htsinETKUJ5IAsZ2l774rfeaNNmB7mVQcR4';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -14,40 +15,40 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
         tgl: document.getElementById('reg-tgl').value
     };
 
+    // Validasi input
     if (!data.uid || !data.nama) {
-        alert("UID dan Nama Lengkap wajib diisi!");
+        alert("Mohon isi UID dan Nama Lengkap!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "MEMPROSES...";
+    btn.textContent = "Memproses...";
 
     try {
-        // Cek apakah UID sudah terdaftar (Validasi Duplikat)
+        // 1. Cek duplikasi di Supabase
         const { data: existing } = await db.from('members').select('uid').eq('uid', data.uid).maybeSingle();
-        
         if (existing) {
-            alert("UID ini sudah terdaftar di sistem!");
+            alert("UID " + data.uid + " sudah terdaftar!");
             btn.disabled = false;
-            btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
+            btn.textContent = "Kirim & Aktivasi via Telegram";
             return;
         }
 
-        // Simpan ke Supabase
-        const { error } = await db.from('members').insert([{
+        // 2. Simpan ke Supabase (Menyesuaikan kolom database Anda)
+        const { error: insertError } = await db.from('members').insert([{
             nama: data.nama,
             uid: data.uid,
             upline: data.upline || null,
             tanggalbergabung: data.tgl ? new Date(data.tgl).toISOString() : new Date().toISOString()
         }]);
 
-        if (error) throw error;
+        if (insertError) throw insertError;
 
-        // Siapkan pesan Telegram
+        // 3. Kirim ke Telegram Admin @DvTeam102
         const jam = new Date().getHours();
-        const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
+        const salam = jam < 11 ? "Pagi" : jam < 15 ? "Siang" : jam < 18 ? "Sore" : "Malam";
         
-        const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
+        const formatPesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
 
@@ -60,13 +61,15 @@ Pekerjaan: ${data.kerja || '-'}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
 
-        // Redirect ke Telegram @DvTeam102
-        window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
+        // Redirect ke Telegram
+        const telegramLink = `https://t.me/DvTeam102?text=${encodeURIComponent(formatPesan)}`;
+        window.location.href = telegramLink;
 
     } catch (err) {
-        alert("Terjadi kesalahan teknis: " + err.message);
+        alert("Gagal: " + err.message);
+        console.error(err);
     } finally {
         btn.disabled = false;
-        btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
+        btn.textContent = "Kirim & Aktivasi via Telegram";
     }
 });
