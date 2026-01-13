@@ -39,10 +39,10 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 
     btn.disabled = true;
-    btn.textContent = "SEDANG MEMPROSES...";
+    btn.textContent = "MEMPROSES...";
 
     try {
-        // 1. CEK DUPLIKASI UID (PENTING: Gunakan 'UID' Kapital)
+        // 1. Cek UID (Wajib Kapital)
         const { data: existing } = await db.from('members').select('UID').eq('UID', tempUser.uid).maybeSingle();
         if (existing) {
             alert("UID " + tempUser.uid + " sudah terdaftar!");
@@ -51,14 +51,14 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
             return;
         }
 
-        // 2. UPLOAD KE IMGBB
+        // 2. Upload Gambar
         let formData = new FormData();
         formData.append("image", fileFile);
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const resData = await res.json();
         tempUser.buktiUrl = resData.data.url;
 
-        // 3. SIMPAN KE SUPABASE (WAJIB KAPITAL SESUAI DATABASE)
+        // 3. Simpan ke Supabase (Wajib Kapital sesuai database Anda)
         const { error } = await db.from('members').insert([{
             Nama: tempUser.nama,
             UID: tempUser.uid,
@@ -79,7 +79,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 });
 
-// AKTIVASI SINYAL (@DvTeam102)
+// Telegram Aktivasi
 document.getElementById('btnAktivasiSinyal').addEventListener('click', () => {
     const jam = new Date().getHours();
     const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
@@ -100,7 +100,7 @@ Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
     window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 });
 
-// GABUNG GROUP (@DvTeamNP)
+// Telegram Group
 document.getElementById('btnGabungGroup').addEventListener('click', () => {
     const pesan = `Halo @DvTeamNP. Saya anggota baru (UID: ${tempUser.uid}). Nama: ${tempUser.nama}. Izin bergabung ke Group Edukasi.`;
     window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesan)}`;
