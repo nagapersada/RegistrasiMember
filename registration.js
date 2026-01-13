@@ -15,38 +15,37 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
         tgl: document.getElementById('reg-tgl').value
     };
 
-    // Validasi input
     if (!data.uid || !data.nama) {
         alert("Mohon isi UID dan Nama Lengkap!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "Memproses...";
+    btn.textContent = "MEMPROSES...";
 
     try {
-        // 1. Cek duplikasi di Supabase
-        const { data: existing } = await db.from('members').select('uid').eq('uid', data.uid).maybeSingle();
+        // 1. Cek duplikasi (Menggunakan huruf besar sesuai error di gambar)
+        const { data: existing } = await db.from('members').select('UID').eq('UID', data.uid).maybeSingle();
         if (existing) {
             alert("UID " + data.uid + " sudah terdaftar!");
             btn.disabled = false;
-            btn.textContent = "Kirim & Aktivasi via Telegram";
+            btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
             return;
         }
 
-        // 2. Simpan ke Supabase (Menyesuaikan kolom database Anda)
+        // 2. Simpan ke Supabase (MENYESUAIKAN HURUF BESAR KOLOM ANDA)
         const { error: insertError } = await db.from('members').insert([{
-            nama: data.nama,
-            uid: data.uid,
-            upline: data.upline || null,
-            tanggalbergabung: data.tgl ? new Date(data.tgl).toISOString() : new Date().toISOString()
+            Nama: data.nama,
+            UID: data.uid,
+            Upline: data.upline || null,
+            TanggalBergabung: data.tgl ? new Date(data.tgl).toISOString() : new Date().toISOString()
         }]);
 
         if (insertError) throw insertError;
 
         // 3. Kirim ke Telegram Admin @DvTeam102
         const jam = new Date().getHours();
-        const salam = jam < 11 ? "Pagi" : jam < 15 ? "Siang" : jam < 18 ? "Sore" : "Malam";
+        const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
         
         const formatPesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
@@ -61,7 +60,7 @@ Pekerjaan: ${data.kerja || '-'}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
 
-        // Redirect ke Telegram
+        // Eksekusi pengiriman ke Telegram
         const telegramLink = `https://t.me/DvTeam102?text=${encodeURIComponent(formatPesan)}`;
         window.location.href = telegramLink;
 
@@ -70,6 +69,6 @@ Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
         console.error(err);
     } finally {
         btn.disabled = false;
-        btn.textContent = "Kirim & Aktivasi via Telegram";
+        btn.textContent = "KIRIM & AKTIVASI VIA TELEGRAM";
     }
 });
