@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aktivasi Sinyal - DVTEAM NP</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Reset & Override untuk halaman registrasi agar presisi */
+    body.reg-page {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      background-color: #121212; /* var(--warna-bg-utama) */
+    }
+    .reg-container {
+      width: 100%;
+      max-width: 450px;
+      background-color: #1a1a1a; /* var(--warna-bg-kartu) */
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .header-reg { text-align: center; margin-bottom: 25px; }
+    .header-reg img { width: 70px; margin-bottom: 10px; }
+    .header-reg h2 { color: #ffd700; margin-bottom: 5px; font-size: 1.5em; }
+    
+    .form-group { margin-bottom: 18px; display: flex; flex-direction: column; }
+    .form-group label { 
+      font-size: 0.8em; 
+      color: #aaa; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+    }
+    .form-group input {
+      width: 100% !important;
+      padding: 12px !important;
+      box-sizing: border-box !important;
+      background: #121212 !important;
+      border: 1px solid #333 !important;
+      color: white !important;
+      border-radius: 8px !important;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    
+    #btnSubmitReg {
+      width: 100%;
+      padding: 15px;
+      background-color: #ffd700;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    #btnSubmitReg:disabled { background-color: #555; cursor: not-allowed; }
+  </style>
+</head>
+<body class="reg-page">
+  <div class="reg-container">
+    <div class="header-reg">
+      <img src="logo.png" alt="Logo">
+      <h2>Form Aktivasi Sinyal</h2>
+      <p style="color: #aaa; font-size: 0.85em;">Silakan lengkapi data diri Anda</p>
+    </div>
+
+    <div id="registration-form">
+      <div class="form-group">
+        <label>UID Saya (Wajib)</label>
+        <input type="text" id="reg-uid" placeholder="Contoh: 12345678">
+      </div>
+
+      <div class="form-group">
+        <label>UID Referal</label>
+        <input type="text" id="reg-upline" placeholder="Kosongkan jika tidak ada">
+      </div>
+
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="reg-nama" placeholder="Sesuai kartu identitas">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Usia</label>
+          <input type="number" id="reg-usia" placeholder="25">
+        </div>
+        <div class="form-group">
+          <label>Tgl Bergabung</label>
+          <input type="date" id="reg-tgl">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tempat Tinggal</label>
+        <input type="text" id="reg-alamat" placeholder="Kota Domisili">
+      </div>
+
+      <div class="form-group">
+        <label>Pekerjaan</label>
+        <input type="text" id="reg-kerja" placeholder="Pekerjaan saat ini">
+      </div>
+
+      <button id="btnSubmitReg">Kirim & Aktivasi via Telegram</button>
+    </div>
+  </div>
+  <script src="registration.js"></script>
+</body>
+</html>
