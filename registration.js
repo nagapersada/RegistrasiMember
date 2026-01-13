@@ -2,46 +2,30 @@ const supabaseUrl = 'https://hysjbwysizpczgcsqvuv.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5c2pid3lzaXpwY3pnY3NxdnV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5MjA2MTYsImV4cCI6MjA3OTQ5NjYxNn0.sLSfXMn9htsinETKUJ5IAsZ2l774rfeaNNmB7mVQcR4';
 const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// API Key ImgBB (Aktif)
-const IMGBB_API_KEY = '5a68759600115086058e17409247657f'; 
 let tempUser = {};
-
-// Preview Gambar Otomatis
-document.getElementById('fileInput').addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('imagePreview').src = e.target.result;
-            document.getElementById('imagePreview').style.display = 'block';
-            document.getElementById('uploadText').style.display = 'none';
-        }
-        reader.readAsDataURL(file);
-    }
-});
 
 document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     const btn = document.getElementById('btnSubmitReg');
-    const fileFile = document.getElementById('fileInput').files[0];
-    
     tempUser = {
         uid: document.getElementById('reg-uid').value.trim(),
         upline: document.getElementById('reg-upline').value.trim(),
         nama: document.getElementById('reg-nama').value.trim(),
         usia: document.getElementById('reg-usia').value.trim(),
+        alamat: document.getElementById('reg-alamat').value.trim(),
+        kerja: document.getElementById('reg-kerja').value.trim(),
         tgl: document.getElementById('reg-tgl').value
     };
 
-    if (!tempUser.uid || !tempUser.nama || !fileFile) {
-        alert("Harap isi UID, Nama, dan Unggah Bukti Saldo!");
+    if (!tempUser.uid || !tempUser.nama) {
+        alert("Harap isi UID dan Nama Lengkap!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "SEDANG MEMPROSES...";
+    btn.textContent = "SEDANG MENYIMPAN...";
 
     try {
-        // 1. Cek UID di Supabase (Gunakan kolom UID Kapital)
+        // 1. Cek UID di Supabase (Gunakan kolom kapital UID)
         const { data: existing } = await db.from('members').select('UID').eq('UID', tempUser.uid).maybeSingle();
         if (existing) {
             alert("UID " + tempUser.uid + " sudah terdaftar di sistem!");
@@ -50,15 +34,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
             return;
         }
 
-        // 2. Upload ke ImgBB Otomatis
-        let formData = new FormData();
-        formData.append("image", fileFile);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-        const resData = await res.json();
-        if (!resData.success) throw new Error("Gagal mengunggah gambar bukti.");
-        tempUser.buktiUrl = resData.data.url;
-
-        // 3. Simpan ke Supabase (Kolom Kapital: Nama, UID, Upline)
+        // 2. Simpan ke Supabase (Kolom Kapital: Nama, UID, Upline, TanggalBergabung)
         const { error } = await db.from('members').insert([{
             Nama: tempUser.nama,
             UID: tempUser.uid,
@@ -68,19 +44,19 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
 
         if (error) throw error;
 
-        // Transisi ke Tombol Telegram Ganda
+        // Tampilkan tombol aksi Telegram
         document.getElementById('formSection').style.display = 'none';
         document.getElementById('actionSection').style.display = 'block';
 
     } catch (err) {
-        alert("Terjadi Kendala: " + err.message);
+        alert("Gagal menyimpan: " + err.message);
     } finally {
         btn.disabled = false;
         btn.textContent = "Simpan & Verifikasi Data";
     }
 });
 
-// LINK 1: AKTIVASI SINYAL (@DvTeam102)
+// AKTIVASI SINYAL (@DvTeam102)
 document.getElementById('btnTeleAktivasi').addEventListener('click', () => {
     const jam = new Date().getHours();
     const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
@@ -92,17 +68,17 @@ UID saya: ${tempUser.uid}
 UID Referal: ${tempUser.upline || '-'}
 Nama Lengkap: ${tempUser.nama}
 Usia: ${tempUser.usia || '-'}
+Tempat Tinggal : ${tempUser.alamat || '-'}
+Pekerjaan: ${tempUser.kerja || '-'}
 
-Screenshot Saldo: ${tempUser.buktiUrl}
+(SAYA AKAN MELAMPIRKAN SCREENSHOT SALDO SETELAH PESAN INI)
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
     window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 });
 
-// LINK 2: GABUNG GRUP VIP (@DvTeamNP)
+// GABUNG GRUP VIP (@DvTeamNP)
 document.getElementById('btnTeleGroup').addEventListener('click', () => {
-    const pesanGroup = `Halo Admin @DvTeamNP. Saya anggota baru dengan UID ${tempUser.uid}.
-Nama: ${tempUser.nama}.
-Izin bergabung ke Group VIP DVTEAM NP. Terima kasih.`;
+    const pesanGroup = `Halo Admin @DvTeamNP. Saya anggota baru dengan UID ${tempUser.uid}. Nama: ${tempUser.nama}. Izin bergabung ke Group VIP DVTEAM NP. Terima kasih.`;
     window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesanGroup)}`;
 });
