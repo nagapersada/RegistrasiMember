@@ -5,7 +5,7 @@ const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 const IMGBB_API_KEY = '32906b297b5d259e883492576b25121b'; 
 let tempUser = {};
 
-// Preview Gambar Screenshot
+// Preview Gambar
 document.getElementById('fileInput').addEventListener('change', function() {
     const file = this.files[0];
     if (file) {
@@ -30,40 +30,44 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
         usia: document.getElementById('reg-usia').value.trim(),
         alamat: document.getElementById('reg-alamat').value.trim(),
         kerja: document.getElementById('reg-kerja').value.trim(),
-        tele: document.getElementById('reg-tele').value.trim()
+        tgl: document.getElementById('reg-tgl').value
     };
 
     if (!tempUser.uid || !tempUser.nama || !fileFile) {
-        alert("Harap isi Nama, UID, dan Upload Screenshot Saldo!");
+        alert("Harap isi UID, Nama, dan Upload Screenshot Saldo!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "UPLOADING SCREENSHOT...";
+    btn.textContent = "SEDANG MEMPROSES...";
 
     try {
-        // 1. Upload Screenshot ke ImgBB
+        // 1. CEK DUPLIKASI UID (PENTING: Gunakan 'UID' Kapital)
+        const { data: existing } = await db.from('members').select('UID').eq('UID', tempUser.uid).maybeSingle();
+        if (existing) {
+            alert("UID " + tempUser.uid + " sudah terdaftar!");
+            btn.disabled = false;
+            btn.textContent = "SIMPAN & VALIDASI";
+            return;
+        }
+
+        // 2. UPLOAD KE IMGBB
         let formData = new FormData();
         formData.append("image", fileFile);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-            method: "POST",
-            body: formData
-        });
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
         const resData = await res.json();
         tempUser.buktiUrl = resData.data.url;
 
-        // 2. Simpan ke Supabase (Kolom Huruf Besar sesuai database Anda)
-        btn.textContent = "MENYIMPAN DATA...";
+        // 3. SIMPAN KE SUPABASE (WAJIB KAPITAL SESUAI DATABASE)
         const { error } = await db.from('members').insert([{
             Nama: tempUser.nama,
             UID: tempUser.uid,
             Upline: tempUser.upline || null,
-            TanggalBergabung: new Date().toISOString()
+            TanggalBergabung: tempUser.tgl ? new Date(tempUser.tgl).toISOString() : new Date().toISOString()
         }]);
 
         if (error) throw error;
 
-        // Berhasil: Tampilkan tombol aksi Telegram
         document.getElementById('formSection').style.display = 'none';
         document.getElementById('actionSection').style.display = 'block';
 
@@ -75,12 +79,11 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 });
 
-// FORMAT PESAN AKTIVASI SINYAL (@DvTeam102)
+// AKTIVASI SINYAL (@DvTeam102)
 document.getElementById('btnAktivasiSinyal').addEventListener('click', () => {
     const jam = new Date().getHours();
     const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
-    
-    const formatPesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${tempUser.nama}
+    const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${tempUser.nama}
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
 
@@ -88,22 +91,17 @@ UID saya: ${tempUser.uid}
 UID Referal: ${tempUser.upline || '-'}
 Nama Lengkap: ${tempUser.nama}
 Usia: ${tempUser.usia || '-'}
-Tempat Tinggal : ${tempUser.alamat || '-'}
+Tempat Tinggal: ${tempUser.alamat || '-'}
 Pekerjaan: ${tempUser.kerja || '-'}
 
 Screenshot Saldo: ${tempUser.buktiUrl}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
-
-    window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(formatPesan)}`;
+    window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 });
 
-// FORMAT PESAN GABUNG GROUP (@DvTeamNP)
+// GABUNG GROUP (@DvTeamNP)
 document.getElementById('btnGabungGroup').addEventListener('click', () => {
-    const pesanGroup = `Halo @DvTeamNP. Saya anggota baru (UID: ${tempUser.uid}).
-Nama: ${tempUser.nama}
-Username Telegram: ${tempUser.tele}
-Izin bergabung ke Group Edukasi. Terima kasih.`;
-    
-    window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesanGroup)}`;
+    const pesan = `Halo @DvTeamNP. Saya anggota baru (UID: ${tempUser.uid}). Nama: ${tempUser.nama}. Izin bergabung ke Group Edukasi.`;
+    window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesan)}`;
 });
