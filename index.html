@@ -8,28 +8,36 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .reg-card {
-      max-width: 450px; margin: 20px auto; padding: 30px;
+      max-width: 450px; margin: 20px auto; padding: 25px;
       border: 1px solid rgba(255, 215, 0, 0.3);
-      background: linear-gradient(145deg, #1a1a1a, #121212);
+      background: #1a1a1a; border-radius: 15px;
     }
-    .form-group { margin-bottom: 20px; display: flex; flex-direction: column; text-align: left; }
-    .form-group label { color: var(--warna-utama); font-size: 0.75em; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-    .form-group input { padding: 14px !important; background: #000 !important; border: 1px solid #333 !important; color: white !important; border-radius: 10px !important; }
-    
-    .upload-area { border: 2px dashed #444; padding: 20px; text-align: center; border-radius: 10px; cursor: pointer; transition: 0.3s; }
-    .upload-area:hover { border-color: var(--warna-utama); background: rgba(255, 215, 0, 0.05); }
+    .form-group { margin-bottom: 18px; display: flex; flex-direction: column; text-align: left; }
+    .form-group label { color: #ffd700; font-size: 0.75em; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+    .form-group input { 
+      padding: 12px !important; background: #000 !important; 
+      border: 1px solid #333 !important; color: white !important; 
+      border-radius: 8px !important; width: 100% !important; box-sizing: border-box !important;
+    }
+    .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .upload-area { 
+      border: 2px dashed #444; padding: 15px; text-align: center; 
+      border-radius: 10px; cursor: pointer; color: #aaa; font-size: 0.9em;
+    }
     #imagePreview { max-width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
-
-    .action-steps { display: none; margin-top: 20px; animation: fadeIn 0.5s; }
-    .btn-vip { width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px; border: none; }
-    .btn-main { background: var(--warna-utama); color: #000; }
-    .btn-sub { background: transparent; color: var(--warna-utama); border: 2px solid var(--warna-utama); }
+    .btn-vip { 
+      width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; 
+      cursor: pointer; border: none; margin-top: 10px;
+    }
+    .btn-main { background: #ffd700; color: #000; }
+    .btn-sub { background: transparent; color: #ffd700; border: 2px solid #ffd700; margin-top: 10px; }
+    #actionSection { display: none; padding: 10px; }
   </style>
 </head>
 <body class="login-page">
-  <div class="card reg-card">
+  <div class="reg-card">
     <div id="formSection">
-      <h2 style="color: var(--warna-utama);">Verifikasi Akun VIP</h2>
+      <h2 style="color: #ffd700; text-align: center;">Verifikasi Akun VIP</h2>
       
       <div class="form-group">
         <label>UID Anggota (Wajib)</label>
@@ -43,7 +51,7 @@
         <label>Nama Lengkap</label>
         <input type="text" id="reg-nama" placeholder="Sesuai ID">
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div class="grid-row">
         <div class="form-group">
           <label>Usia</label>
           <input type="number" id="reg-usia" placeholder="25">
@@ -62,19 +70,18 @@
         <input type="text" id="reg-kerja" placeholder="Pekerjaan saat ini">
       </div>
       <div class="form-group">
-        <label>Bukti Screenshot Saldo</label>
+        <label>Screenshot Saldo Akun</label>
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
           <span id="uploadText">📸 Klik Upload Bukti</span>
           <input type="file" id="fileInput" accept="image/*" style="display: none;">
           <img id="imagePreview" src="">
         </div>
       </div>
-      
       <button id="btnSubmitReg" class="btn-vip btn-main">SIMPAN & VALIDASI</button>
     </div>
 
-    <div id="actionSection" class="action-steps">
-      <div style="background: rgba(255, 215, 0, 0.1); color: var(--warna-utama); padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+    <div id="actionSection">
+      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #ffd700;">
         ✅ DATA BERHASIL TERVERIFIKASI
       </div>
       <button id="btnAktivasiSinyal" class="btn-vip btn-main">🚀 AKTIVASI SINYAL (@DvTeam102)</button>
