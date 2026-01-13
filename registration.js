@@ -24,7 +24,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     btn.textContent = "MEMPROSES...";
 
     try {
-        // 1. Cek duplikasi (Menggunakan huruf besar sesuai error di gambar)
+        // 1. Cek duplikasi menggunakan kolom 'UID' (Capital)
         const { data: existing } = await db.from('members').select('UID').eq('UID', data.uid).maybeSingle();
         if (existing) {
             alert("UID " + data.uid + " sudah terdaftar!");
@@ -33,7 +33,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
             return;
         }
 
-        // 2. Simpan ke Supabase (MENYESUAIKAN HURUF BESAR KOLOM ANDA)
+        // 2. Simpan ke Supabase menggunakan Nama Kolom CAPITAL sesuai database Anda
         const { error: insertError } = await db.from('members').insert([{
             Nama: data.nama,
             UID: data.uid,
@@ -43,26 +43,25 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
 
         if (insertError) throw insertError;
 
-        // 3. Kirim ke Telegram Admin @DvTeam102
+        // 3. Format Pesan Telegram
         const jam = new Date().getHours();
         const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
         
-        const formatPesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
+        const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${data.nama}.
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
 
 UID saya: ${data.uid}
 UID Referal: ${data.upline || '-'}
 Nama Lengkap: ${data.nama}
-Usia: ${data.usia || '-'}
-Tempat Tinggal : ${data.alamat || '-'}
-Pekerjaan: ${data.kerja || '-'}
+Usia: ${data.usia}
+Tempat Tinggal : ${data.alamat}
+Pekerjaan: ${data.kerja}
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
 
-        // Eksekusi pengiriman ke Telegram
-        const telegramLink = `https://t.me/DvTeam102?text=${encodeURIComponent(formatPesan)}`;
-        window.location.href = telegramLink;
+        // Redirect ke Telegram @DvTeam102
+        window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 
     } catch (err) {
         alert("Gagal: " + err.message);
