@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Verifikasi VIP - DVTEAM NP</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Desain Elegan & Profesional */
+    body.reg-page {
+      display: flex; justify-content: center; align-items: flex-start;
+      padding: 20px; background-color: #0c0c0c; min-height: 100vh;
+    }
+    .reg-container {
+      width: 100%; max-width: 480px; background: linear-gradient(145deg, #1a1a1a, #121212);
+      padding: 35px; border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.2);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.8); text-align: center;
+    }
+    .header-reg img { width: 90px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+    .header-reg h2 { color: #ffd700; margin-bottom: 10px; font-size: 1.6em; letter-spacing: 1px; }
+    
+    .form-group { margin-bottom: 22px; text-align: left; }
+    .form-group label { 
+      font-size: 0.75em; color: #ffd700; margin-bottom: 10px; display: block;
+      font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .form-group input {
+      width: 100% !important; padding: 14px !important; box-sizing: border-box !important;
+      background: rgba(0,0,0,0.4) !important; border: 1px solid #333 !important;
+      color: white !important; border-radius: 12px !important; transition: 0.3s;
+    }
+    .form-group input:focus { border-color: #ffd700 !important; box-shadow: 0 0 10px rgba(255,215,0,0.2); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    
+    /* Area Upload */
+    .upload-box {
+      border: 2px dashed #444; padding: 25px; border-radius: 15px; cursor: pointer;
+      transition: 0.3s; color: #888; margin-top: 10px; background: rgba(255,215,0,0.03);
+    }
+    .upload-box:hover { border-color: #ffd700; background: rgba(255,215,0,0.08); }
+    #imagePreview { max-width: 100%; border-radius: 12px; margin-top: 15px; display: none; border: 1px solid #444; }
+
+    /* Tombol */
+    .btn-vip {
+      width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer;
+      font-size: 1em; text-transform: uppercase; border: none; transition: 0.3s;
+    }
+    .btn-gold { background: #ffd700; color: #000; box-shadow: 0 5px 15px rgba(255,215,0,0.3); }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,215,0,0.4); }
+    .btn-outline { background: transparent; color: #ffd700; border: 2px solid #ffd700; margin-top: 15px; }
+
+    /* Tahap Sukses */
+    #actionSection { display: none; animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="reg-page">
+  <div class="reg-container">
+    <div id="formSection">
+      <div class="header-reg">
+        <img src="logo.png" alt="Logo DVTEAM">
+        <h2>Verifikasi Akun VIP</h2>
+        <p style="color: #888; font-size: 0.9em; margin-bottom: 30px;">Lengkapi data untuk akses Sinyal & Grup VIP</p>
+      </div>
+
+      <div class="form-group">
+        <label>UID Anggota (Wajib)</label>
+        <input type="text" id="reg-uid" placeholder="Contoh: 814382">
+      </div>
+
+      <div class="form-group">
+        <label>UID Referal</label>
+        <input type="text" id="reg-upline" placeholder="Kosongkan jika tidak ada">
+      </div>
+
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="reg-nama" placeholder="Sesuai kartu identitas">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Usia</label>
+          <input type="number" id="reg-usia" placeholder="Contoh: 25">
+        </div>
+        <div class="form-group">
+          <label>Tgl Bergabung</label>
+          <input type="date" id="reg-tgl">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Screenshot Saldo Akun</label>
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+          <span id="uploadText">📸 Klik untuk Upload Bukti Saldo</span>
+          <input type="file" id="fileInput" accept="image/*" style="display: none;">
+          <img id="imagePreview" src="">
+        </div>
+      </div>
+
+      <button id="btnSubmitReg" class="btn-vip btn-gold">Simpan & Verifikasi Data</button>
+    </div>
+
+    <div id="actionSection">
+      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px dashed #ffd700;">
+        <h3 style="margin: 0; font-size: 1.2em;">✅ VERIFIKASI BERHASIL</h3>
+        <p style="font-size: 0.85em; margin: 10px 0 0 0;">Data Anda telah tersimpan. Silakan klik kedua tombol di bawah ini:</p>
+      </div>
+      
+      <button id="btnTeleAktivasi" class="btn-vip btn-gold">1. Aktivasi Sinyal (@DvTeam102)</button>
+      <button id="btnTeleGroup" class="btn-vip btn-outline">2. Gabung Grup VIP (@DvTeamNP)</button>
+    </div>
+  </div>
+
+  <script src="registration.js"></script>
+</body>
+</html>
