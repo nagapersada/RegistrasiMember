@@ -4,6 +4,7 @@ const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 let tempUser = {};
 
+// Proses Simpan Data
 document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     const btn = document.getElementById('btnSubmitReg');
     tempUser = {
@@ -17,24 +18,24 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     };
 
     if (!tempUser.uid || !tempUser.nama) {
-        alert("Harap isi UID dan Nama Lengkap!");
+        alert("UID dan Nama Lengkap wajib diisi!");
         return;
     }
 
     btn.disabled = true;
-    btn.textContent = "SEDANG MENYIMPAN...";
+    btn.textContent = "MEMPROSES...";
 
     try {
-        // 1. Cek UID di Supabase (Gunakan kolom kapital UID)
+        // Cek Duplikasi (Wajib pakai UID Kapital)
         const { data: existing } = await db.from('members').select('UID').eq('UID', tempUser.uid).maybeSingle();
         if (existing) {
-            alert("UID " + tempUser.uid + " sudah terdaftar di sistem!");
+            alert("UID " + tempUser.uid + " sudah terdaftar!");
             btn.disabled = false;
             btn.textContent = "Simpan & Verifikasi Data";
             return;
         }
 
-        // 2. Simpan ke Supabase (Kolom Kapital: Nama, UID, Upline, TanggalBergabung)
+        // Simpan ke Supabase (Kolom Kapital: Nama, UID, Upline, TanggalBergabung)
         const { error } = await db.from('members').insert([{
             Nama: tempUser.nama,
             UID: tempUser.uid,
@@ -44,7 +45,7 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
 
         if (error) throw error;
 
-        // Tampilkan tombol aksi Telegram
+        // Pindah ke bagian sukses
         document.getElementById('formSection').style.display = 'none';
         document.getElementById('actionSection').style.display = 'block';
 
@@ -56,10 +57,25 @@ document.getElementById('btnSubmitReg').addEventListener('click', async () => {
     }
 });
 
-// AKTIVASI SINYAL (@DvTeam102)
+// Checklist grup untuk mengaktifkan tombol aktivasi
+document.getElementById('checkGroup').addEventListener('change', function() {
+    const btnAktivasi = document.getElementById('btnTeleAktivasi');
+    if (this.checked) {
+        btnAktivasi.disabled = false;
+        btnAktivasi.style.opacity = "1";
+        btnAktivasi.style.cursor = "pointer";
+    } else {
+        btnAktivasi.disabled = true;
+        btnAktivasi.style.opacity = "0.5";
+        btnAktivasi.style.cursor = "not-allowed";
+    }
+});
+
+// Aksi Kirim ke Telegram Admin (@DvTeam102)
 document.getElementById('btnTeleAktivasi').addEventListener('click', () => {
     const jam = new Date().getHours();
     const salam = jam < 11 ? "pagi" : jam < 15 ? "siang" : jam < 18 ? "sore" : "malam";
+    
     const pesan = `Halo, selamat ${salam}. Perkenalkan, nama saya ${tempUser.nama}
 Saya telah melakukan deposit pertama dan ingin mengajukan aktivasi sinyal.
 Berikut data diri saya untuk diproses:
@@ -74,11 +90,6 @@ Pekerjaan: ${tempUser.kerja || '-'}
 (SAYA AKAN MELAMPIRKAN SCREENSHOT SALDO SETELAH PESAN INI)
 
 Terima kasih, mohon bantuannya untuk proses aktivasi sinyal saya.`;
-    window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
-});
 
-// GABUNG GRUP VIP (@DvTeamNP)
-document.getElementById('btnTeleGroup').addEventListener('click', () => {
-    const pesanGroup = `Halo Admin @DvTeamNP. Saya anggota baru dengan UID ${tempUser.uid}. Nama: ${tempUser.nama}. Izin bergabung ke Group VIP DVTEAM NP. Terima kasih.`;
-    window.location.href = `https://t.me/DvTeamNP?text=${encodeURIComponent(pesanGroup)}`;
+    window.location.href = `https://t.me/DvTeam102?text=${encodeURIComponent(pesan)}`;
 });
