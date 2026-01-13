@@ -3,88 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Verifikasi VIP - DVTEAM NP</title>
+  <title>Registrasi VIP - DVTEAM NP</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    .reg-card {
-      max-width: 450px; margin: 20px auto; padding: 25px;
-      border: 1px solid rgba(255, 215, 0, 0.3);
-      background: #1a1a1a; border-radius: 15px;
-    }
-    .form-group { margin-bottom: 18px; display: flex; flex-direction: column; text-align: left; }
-    .form-group label { color: #ffd700; font-size: 0.75em; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-    .form-group input { 
-      padding: 12px !important; background: #000 !important; 
-      border: 1px solid #333 !important; color: white !important; 
-      border-radius: 8px !important; width: 100% !important; box-sizing: border-box !important;
-    }
+    .reg-card { max-width: 450px; margin: 20px auto; padding: 25px; border: 1px solid rgba(255, 215, 0, 0.3); background: #1a1a1a; border-radius: 15px; }
+    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; text-align: left; }
+    .form-group label { color: #ffd700; font-size: 0.75em; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .form-group input { padding: 12px !important; background: #000 !important; border: 1px solid #333 !important; color: white !important; border-radius: 8px !important; width: 100% !important; box-sizing: border-box !important; }
     .grid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .upload-area { 
-      border: 2px dashed #444; padding: 15px; text-align: center; 
-      border-radius: 10px; cursor: pointer; color: #aaa; font-size: 0.9em;
-    }
+    .upload-area { border: 2px dashed #444; padding: 15px; text-align: center; border-radius: 10px; cursor: pointer; color: #aaa; font-size: 0.85em; }
     #imagePreview { max-width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
-    .btn-vip { 
-      width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; 
-      cursor: pointer; border: none; margin-top: 10px;
-    }
+    .btn-vip { width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
     .btn-main { background: #ffd700; color: #000; }
     .btn-sub { background: transparent; color: #ffd700; border: 2px solid #ffd700; margin-top: 10px; }
-    #actionSection { display: none; padding: 10px; }
+    #actionSection { display: none; }
   </style>
 </head>
 <body class="login-page">
   <div class="reg-card">
     <div id="formSection">
-      <h2 style="color: #ffd700; text-align: center;">Verifikasi Akun VIP</h2>
-      
-      <div class="form-group">
-        <label>UID Anggota (Wajib)</label>
-        <input type="text" id="reg-uid" placeholder="8 digit UID">
-      </div>
-      <div class="form-group">
-        <label>UID Referal</label>
-        <input type="text" id="reg-upline" placeholder="Kosongkan jika tidak ada">
-      </div>
-      <div class="form-group">
-        <label>Nama Lengkap</label>
-        <input type="text" id="reg-nama" placeholder="Sesuai ID">
-      </div>
+      <h2 style="color: #ffd700; text-align: center;">Form Verifikasi VIP</h2>
+      <div class="form-group"><label>UID Anggota</label><input type="text" id="reg-uid" placeholder="8 digit UID"></div>
+      <div class="form-group"><label>UID Referal</label><input type="text" id="reg-upline" placeholder="Opsional"></div>
+      <div class="form-group"><label>Nama Lengkap</label><input type="text" id="reg-nama" placeholder="Sesuai ID"></div>
       <div class="grid-row">
-        <div class="form-group">
-          <label>Usia</label>
-          <input type="number" id="reg-usia" placeholder="25">
-        </div>
-        <div class="form-group">
-          <label>Tgl Bergabung</label>
-          <input type="date" id="reg-tgl">
-        </div>
+        <div class="form-group"><label>Usia</label><input type="number" id="reg-usia" placeholder="25"></div>
+        <div class="form-group"><label>Tgl Bergabung</label><input type="date" id="reg-tgl"></div>
       </div>
+      <div class="form-group"><label>Tempat Tinggal</label><input type="text" id="reg-alamat" placeholder="Kota"></div>
+      <div class="form-group"><label>Pekerjaan</label><input type="text" id="reg-kerja" placeholder="Pekerjaan"></div>
       <div class="form-group">
-        <label>Tempat Tinggal</label>
-        <input type="text" id="reg-alamat" placeholder="Kota Domisili">
-      </div>
-      <div class="form-group">
-        <label>Pekerjaan</label>
-        <input type="text" id="reg-kerja" placeholder="Pekerjaan saat ini">
-      </div>
-      <div class="form-group">
-        <label>Screenshot Saldo Akun</label>
+        <label>Screenshot Saldo</label>
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-          <span id="uploadText">📸 Klik Upload Bukti</span>
+          <span id="uploadText">📸 Klik Upload Bukti Saldo</span>
           <input type="file" id="fileInput" accept="image/*" style="display: none;">
           <img id="imagePreview" src="">
         </div>
       </div>
       <button id="btnSubmitReg" class="btn-vip btn-main">SIMPAN & VALIDASI</button>
     </div>
-
     <div id="actionSection">
-      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #ffd700;">
-        ✅ DATA BERHASIL TERVERIFIKASI
-      </div>
-      <button id="btnAktivasiSinyal" class="btn-vip btn-main">🚀 AKTIVASI SINYAL (@DvTeam102)</button>
+      <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #ffd700;">✅ DATA & BUKTI TERVERIFIKASI</div>
+      <button id="btnAktivasiSinyal" class="btn-vip btn-main">🚀 AJUKAN SINYAL (@DvTeam102)</button>
       <button id="btnGabungGroup" class="btn-vip btn-sub">👥 GABUNG GROUP (@DvTeamNP)</button>
     </div>
   </div>
