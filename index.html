@@ -17,9 +17,14 @@
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .btn-vip { width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1em; text-transform: uppercase; border: none; transition: 0.3s; }
     .btn-gold { background: #ffd700; color: #000; box-shadow: 0 5px 15px rgba(255,215,0,0.3); }
-    .btn-outline { background: transparent; color: #ffd700; border: 2px solid #ffd700; margin-top: 15px; }
+    .btn-outline { background: transparent; color: #ffd700; border: 1px solid #ffd700; margin-bottom: 10px; font-size: 0.85em; }
     #actionSection { display: none; animation: fadeIn 0.6s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Gaya Jendela Baru (Modal) */
+    .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+    .modal-content { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 100%; max-width: 400px; text-align: left; }
+    .copy-area { background: #000; color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85em; white-space: pre-wrap; margin: 15px 0; border: 1px solid #333; max-height: 250px; overflow-y: auto; }
   </style>
 </head>
 <body class="reg-page">
@@ -27,12 +32,13 @@
     <div id="formSection">
       <div class="header-reg">
         <img src="logo.png" alt="Logo DVTEAM">
-        <h2>Registrasi & Aktivasi Sinyal</h2>
-        <p style="color: #888; font-size: 0.9em; margin-bottom: 30px;">Lengkapi data untuk akses VIP Sinyal</p>
+        <h2>Verifikasi Akun VIP</h2>
       </div>
-      <div class="form-group"><label>UID Anggota (Wajib)</label><input type="text" id="reg-uid" placeholder="8 digit UID"></div>
-      <div class="form-group"><label>UID Referal</label><input type="text" id="reg-upline" placeholder="8 digit UID"></div>
+      <div class="form-group"><label>UID Anggota (Wajib)</label><input type="text" id="reg-uid" placeholder="8 digit UID Anda"></div>
+      <div class="form-group"><label>UID Referral (Wajib)</label><input type="text" id="reg-upline" placeholder="Masukkan UID Referral / Upline"></div>
       <div class="form-group"><label>Nama Lengkap</label><input type="text" id="reg-nama" placeholder="Sesuai kartu identitas"></div>
+      <div class="form-group"><label>Username Telegram (Wajib)</label><input type="text" id="reg-tele" placeholder="Contoh: @username_anda"></div>
+      
       <div class="form-row">
         <div class="form-group"><label>Usia</label><input type="number" id="reg-usia" placeholder="25"></div>
         <div class="form-group"><label>Tgl Bergabung</label><input type="date" id="reg-tgl"></div>
@@ -44,26 +50,49 @@
 
     <div id="actionSection">
       <div style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px dashed #ffd700;">
-        <h3 style="margin: 0; font-size: 1.2em;">✅ DATA BERHASIL DISIMPAN</h3>
-        <p style="font-size: 0.85em; margin: 10px 0 0 0;">Langkah terakhir: Bergabung ke grup dan ajukan aktivasi.</p>
+        <h3 style="margin: 0; font-size: 1.2em;">✅ DATA DISIMPAN</h3>
+        <p style="font-size: 0.85em; margin: 10px 0 0 0;">Langkah terakhir: Join grup & aktivasi.</p>
       </div>
       
-      <p style="color: #ffd700; font-weight: bold; font-size: 0.85em; margin-bottom: 15px; text-transform: uppercase;">1. Wajib Bergabung ke 2 Grup:</p>
-      <button onclick="window.open('https://t.me/+N3rUCTqJqcs5ZWU9', '_blank')" class="btn-vip btn-outline" style="margin-bottom: 10px;">👥 GABUNG GRUP 1</button>
-      <button onclick="window.open('https://t.me/+sI0wm3j9n2U2YWJl', '_blank')" class="btn-vip btn-outline" style="margin-bottom: 20px;">👥 GABUNG GRUP 2</button>
+      <p style="color: #ffd700; font-weight: bold; font-size: 0.8em; margin-bottom: 15px; text-transform: uppercase;">1. WAJIB JOIN SEMUA GRUP BERIKUT:</p>
+      <button onclick="handleGroupJoin(this, 'https://t.me/+sI0wm3j9n2U2YWJl')" class="btn-vip btn-outline">👥 Group DVTeam -NP</button>
+      <button onclick="handleGroupJoin(this, 'https://t.me/+_M3d7ui9k7liNWY0')" class="btn-vip btn-outline">👥 Group Sinyal Trading Pemula</button>
+      <button onclick="handleGroupJoin(this, 'https://t.me/+zsMk5uDrQ_dmMjk9')" class="btn-vip btn-outline">👥 Group Screenshot Trading</button>
+      <button onclick="handleGroupJoin(this, 'https://t.me/KumpulanWDSinyalDV')" class="btn-vip btn-outline">👥 Group Sinyal WD</button>
 
-      <div style="background: #111; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
+      <div style="background: #111; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px solid #333; text-align: left;">
         <label style="display: flex; align-items: center; cursor: pointer; color: #ccc; font-size: 0.85em;">
-          <input type="checkbox" id="checkGroup" style="width: 20px; height: 20px; margin-right: 12px; accent-color: #ffd700;">
-          Saya sudah bergabung ke kedua grup di atas.
+          <input type="checkbox" id="checkGroup" style="width: 20px; height: 20px; margin-right: 12px; accent-color: #ffd700;" disabled>
+          Saya sudah bergabung ke SEMUA grup di atas.
         </label>
       </div>
 
-      <button id="btnTeleAktivasi" class="btn-vip btn-gold" disabled style="opacity: 0.5; cursor: not-allowed;">
-        🚀 2. AJUKAN AKTIVASI SINYAL (@DVTEAM102)
-      </button>
+      <div id="activationContainer" style="display: none;">
+         <button id="btnOpenModal" class="btn-vip btn-gold">🚀 2. AJUKAN AKTIVASI SINYAL</button>
+      </div>
     </div>
   </div>
+
+  <div id="copyModal" class="modal">
+    <div class="modal-content">
+      <div id="modalNormalContent">
+        <h3 style="color: #ffd700; margin-top: 0;">Salin Format Pesan</h3>
+        <p style="color: #ccc; font-size: 0.8em;">Klik tombol di bawah untuk menyalin pesan, lalu paste ke Admin Telegram.</p>
+        <div id="textToCopy" class="copy-area"></div>
+        <button id="btnCopyOnly" class="btn-vip btn-gold" style="margin-bottom: 10px;">📋 SALIN FORMAT PESAN</button>
+        <button id="btnGoToTele1" class="btn-vip btn-outline" style="font-size: 0.8em;">➡️ KIRIM KE @DvTeam102</button>
+        <button id="btnGoToTele2" class="btn-vip btn-outline" style="font-size: 0.8em;">➡️ KIRIM KE @DvTeamNP</button>
+        <button onclick="document.getElementById('copyModal').style.display='none'" style="background:none; border:none; color:#666; width:100%; margin-top:10px; cursor:pointer;">Batal</button>
+      </div>
+
+      <div id="modalFinishContent" style="display: none; text-align: center;">
+        <h3 style="color: #ffd700;">Terima kasih dan Selamat Bergabung..🙏❤️</h3>
+        <p style="color: #ccc; font-size: 0.9em; margin-bottom: 20px;">Permohonan aktivasi Anda telah dikirimkan ke tim admin.</p>
+        <button onclick="location.reload()" class="btn-vip btn-gold">SELESAI & TUTUP</button>
+      </div>
+    </div>
+  </div>
+
   <script src="registration.js"></script>
 </body>
 </html>
